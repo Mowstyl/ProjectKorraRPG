@@ -42,19 +42,32 @@ public class RPGListener implements Listener{
 				Player player = (Player) event.getEntity();
 				BendingPlayer bP = BendingPlayer.getBendingPlayer(player.getName());
 				if (bP != null && (RPGMethods.isCurrentAvatar(player.getUniqueId()))) {
-					if (event.getCause() == DamageCause.FALL && bP.hasElement(Element.AIR)) return;
-					else if (event.getCause() == DamageCause.FALL && bP.hasElement(Element.EARTH) && EarthAbility.isEarthbendable(player, player.getLocation().getBlock().getRelative(BlockFace.DOWN))) return;
-					else {
-						if (player.getHealth() - event.getDamage() <= 0) {
-                                                        if (bP.canBendIgnoreBindsCooldowns(CoreAbility.getAbility("AvatarState"))){
-                                                                if (!bP.isOnCooldown("AvatarState")) {
-                                                                        player.setHealth(2);
-                                                                        event.setCancelled(true);
-                                                                        new AvatarState(player);
-                                                                        return;
-                                                                } 
-                                                        }
-                                                        RPGMethods.cycleAvatar(bP);
+					if (event.getCause() == DamageCause.FALL &&
+							bP.hasElement(Element.AIR))
+					{
+						return;
+					}
+					else if (event.getCause() == DamageCause.FALL &&
+							bP.hasElement(Element.EARTH) &&
+							EarthAbility.isEarthbendable(player, player.getLocation().getBlock().getRelative(BlockFace.DOWN)))
+					{
+						return;
+					}
+					else
+					{
+						if (player.getHealth() - event.getDamage() <= 0)
+						{
+                            if (bP.canBendIgnoreBindsCooldowns(CoreAbility.getAbility("AvatarState")))
+                            {
+                                    if (!bP.isOnCooldown("AvatarState"))
+                                    {
+                                            player.setHealth(2);
+                                            event.setCancelled(true);
+                                            new AvatarState(player);
+                                            return;
+                                    } 
+                            }
+                            RPGMethods.cycleAvatar(bP);
 						}
 					}
 				}
@@ -95,6 +108,12 @@ public class RPGListener implements Listener{
 			EventManager.skipper.put(world, false);
 			return;
 		}
+		
+		if (EventManager.marker.get(world).equals("LunarEclipse")) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		EventManager.marker.put(world, "FullMoon");
 		for (Player player : world.getPlayers()) {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
@@ -135,6 +154,12 @@ public class RPGListener implements Listener{
 			EventManager.skipper.put(world, false);
 			return;
 		}
+		
+		if (EventManager.marker.get(world).equals("SozinsComet")) {
+			event.setCancelled(true);
+			return;
+		}
+		
 		EventManager.marker.put(world, "SolarEclipse");
 		for (Player player : world.getPlayers()) {
 			BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(player);
@@ -172,9 +197,9 @@ public class RPGListener implements Listener{
 			EventManager.marker.put(event.getWorld(), "");
 		}
 
-		if (RPGMethods.isSozinsComet(event.getWorld())) {
+		if (RPGMethods.isSozinsComet(event.getWorld()) && !EventManager.marker.get(event.getWorld()).equals("SozinsComet")) {
 			ProjectKorraRPG.plugin.getServer().getPluginManager().callEvent(new SozinsCometEvent(event.getWorld()));
-		} else if (RPGMethods.isSolarEclipse(event.getWorld())) {
+		} else if (RPGMethods.isSolarEclipse(event.getWorld()) && !EventManager.marker.get(event.getWorld()).equals("SolarEclipse")) {
 			ProjectKorraRPG.plugin.getServer().getPluginManager().callEvent(new SolarEclipseEvent(event.getWorld()));
 		}
 	}
@@ -185,9 +210,9 @@ public class RPGListener implements Listener{
 			EventManager.marker.put(event.getWorld(), "");
 		}
 
-		if (RPGMethods.isLunarEclipse(event.getWorld())) {
+		if (RPGMethods.isLunarEclipse(event.getWorld()) && !EventManager.marker.get(event.getWorld()).equals("LunarEclipse")) {
 			ProjectKorraRPG.plugin.getServer().getPluginManager().callEvent(new LunarEclipseEvent(event.getWorld()));
-		} else if (RPGMethods.isFullMoon(event.getWorld())) {
+		} else if (RPGMethods.isFullMoon(event.getWorld()) && !EventManager.marker.get(event.getWorld()).equals("FullMoon")) {
 			ProjectKorraRPG.plugin.getServer().getPluginManager().callEvent(new FullMoonEvent(event.getWorld()));
 		}
 	}
