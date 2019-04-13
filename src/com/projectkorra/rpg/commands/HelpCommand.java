@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class HelpCommand extends RPGCommand{
@@ -79,7 +80,7 @@ public class HelpCommand extends RPGCommand{
 				l.add(cmd.getName());
 			}
 		}
-		Collections.sort(l);
+		Collections.sort(l, Comparator.nullsLast(Comparator.naturalOrder()));
 		l.addAll(Arrays.asList(new String[] {"FullMoon", "LunarEclipse", "SolarEclipse", "SozinsComet"}));
 		return l;
 	}
