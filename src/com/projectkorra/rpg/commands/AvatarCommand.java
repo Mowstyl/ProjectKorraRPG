@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,13 +27,16 @@ public class AvatarCommand extends RPGCommand{
 		if (!hasPermission(sender))
 			return;
 		if (args.get(0).equalsIgnoreCase("list")) {
-			ResultSet rs = DBConnection.sql.readQuery("SELECT player FROM pk_avatars");
 			List<String> avatars = new ArrayList<>();
+			ResultSet rs = DBConnection.sql.readQuery("SELECT player FROM pk_avatars");
 			try {
 				while (rs.next()) {
 					if (avatars.contains(rs.getString(1))) continue;
 					avatars.add(rs.getString(1));
 				}
+				Statement stmt = rs.getStatement();
+				rs.close();
+				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return;

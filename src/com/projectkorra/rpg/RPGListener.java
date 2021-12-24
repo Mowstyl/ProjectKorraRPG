@@ -85,8 +85,6 @@ public class RPGListener implements Listener{
 	
 	@EventHandler
 	public void onBendingPlayerCreationEvent(BendingPlayerCreationEvent event) {
-		if (!ConfigManager.rpgConfig.get().getBoolean("ElementAssign.Enabled")) return;
-
 		if (event.getBendingPlayer() != null) {
 			BendingPlayer bPlayer = event.getBendingPlayer();
 

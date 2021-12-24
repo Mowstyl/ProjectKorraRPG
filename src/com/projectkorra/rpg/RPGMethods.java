@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -210,59 +211,53 @@ public class RPGMethods {
 	 * @param player BendingPlayer being assigned an element to
 	 */
 	public static void randomAssign(BendingPlayer player) {
-		double rand = Math.random();
-		double earthchance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Earth");
-		double firechance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Fire");
-		double airchance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Air");
-		double waterchance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Water");
-		double chichance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Chi");
+		Element newElement = null;
 
 		if (ConfigManager.rpgConfig.get().getBoolean("ElementAssign.Enabled")) {
+			double rand = Math.random();
+			double earthchance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Earth");
+			double firechance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Fire");
+			double airchance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Air");
+			double waterchance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Water");
+			double chichance = ConfigManager.rpgConfig.get().getDouble("ElementAssign.Percentages.Chi");
+
 			if (rand < earthchance) {
-				assignElement(player, Element.EARTH);
-				return;
+				newElement = Element.EARTH;
 			}
-
-			else if (rand < waterchance + earthchance && rand > earthchance) {
+			else if (rand < waterchance + earthchance) {
 				assignElement(player, Element.WATER);
-				return;
 			}
-
-			else if (rand < airchance + waterchance + earthchance && rand > waterchance + earthchance) {
+			else if (rand < airchance + waterchance + earthchance) {
 				assignElement(player, Element.AIR);
-				return;
 			}
-
-			else if (rand < firechance + airchance + waterchance + earthchance && rand > airchance + waterchance + earthchance) {
+			else if (rand < firechance + airchance + waterchance + earthchance) {
 				assignElement(player, Element.FIRE);
-				return;
 			}
-
-			else if (rand < chichance + firechance + airchance + waterchance + earthchance && rand > firechance + airchance + waterchance + earthchance) {
+			else if (rand < chichance + firechance + airchance + waterchance + earthchance) {
 				assignElement(player, Element.CHI);
-				return;
 			}
 		} else {
 			String defaultElement = ConfigManager.rpgConfig.get().getString("ElementAssign.Default");
-			Element e = Element.EARTH;
 
-			if (defaultElement.equalsIgnoreCase("None")) {
-				return;
+			if (defaultElement.equalsIgnoreCase("chi")) {
+				newElement = Element.CHI;
 			}
-
-			if (defaultElement.equalsIgnoreCase("Chi"))
-				e = Element.CHI;
-			else if (defaultElement.equalsIgnoreCase("Water"))
-				e = Element.WATER;
-			else if (defaultElement.equalsIgnoreCase("Earth"))
-				e = Element.EARTH;
-			else if (defaultElement.equalsIgnoreCase("Fire"))
-				e = Element.FIRE;
-			else if (defaultElement.equalsIgnoreCase("Air"))
-				e = Element.AIR;
-
-			assignElement(player, e);
-			return;
+			else if (defaultElement.equalsIgnoreCase("water")) {
+				newElement = Element.WATER;
+			}
+			else if (defaultElement.equalsIgnoreCase("earth")) {
+				newElement = Element.EARTH;
+			}
+			else if (defaultElement.equalsIgnoreCase("fire")) {
+				newElement = Element.FIRE;
+			}
+			else if (defaultElement.equalsIgnoreCase("air")) {
+				newElement = Element.AIR;
+			}
+		}
+		
+		if (newElement != null) {
+			assignElement(player, newElement);
 		}
 	}
 	
@@ -270,55 +265,72 @@ public class RPGMethods {
 		if (bPlayer.hasElement(Element.CHI)) return;
                 
 		double chance = 0;
-		String[] subs = {"Blood", "Combustion", "Flight", "Healing", "Ice", "Lava", "Lightning", "Metal", "Plant", "Sand", "SpiritualProjection"};
+		// String[] subs = {"Blood", "Combustion", "Flight", "Healing", "Ice", "Lava", "Lightning", "Metal", "Plant", "Sand", "SpiritualProjection"};
+		SubElement[] subs = SubElement.getAllSubElements();
 		StringBuilder sb = new StringBuilder(ChatColor.YELLOW + "You have an affinity for ");
-		ArrayList<String> sublist = new ArrayList<>();
+		ArrayList<SubElement> sublist = new ArrayList<>();
+		boolean checkConflicts = ConfigManager.rpgConfig.get().getBoolean("SubElementAssign.CheckConflicts", true);
+		int maxSubElements = ConfigManager.rpgConfig.get().getInt("SubElementAssign.MaxSubElements", -1);
 		
-		for (String sub : subs) {
-                        double rand = Math.random();
-			chance = ConfigManager.rpgConfig.get().getDouble("SubElementAssign.Percentages." + sub);
-			String name = sub;
-			if (sub.equals("SpiritualProjection"))
-				name = "Spiritual";
-			SubElement s = (SubElement) Element.getElement(name);
-			Element e = s.getParentElement();
-			
-			if (!bPlayer.hasElement(e)) continue;
-			if (sub.equals("Metal") && sublist.contains(SubElement.LAVA)) continue;
-			if (sub.equals("Lightning") && sublist.contains(SubElement.COMBUSTION)) continue;
+		for (SubElement sub : subs) {
+			if (maxSubElements == 0) {
+				break;
+			}
+			double rand = Math.random();
+			String name = sub.getName();
+			Element e = sub.getParentElement();
+			chance = ConfigManager.rpgConfig.get().getDouble("SubElementAssign.Percentages." + name);
+
+			if (!bPlayer.hasElement(e) || chance <= 0) {
+				continue;
+			}
+
+			if (checkConflicts) {
+				if (sub == SubElement.METAL && sublist.contains(SubElement.LAVA)) continue;
+				if (sub == SubElement.LAVA && sublist.contains(SubElement.METAL)) continue;
+				if (sub== SubElement.LIGHTNING && sublist.contains(SubElement.COMBUSTION)) continue;
+				if (sub== SubElement.COMBUSTION && sublist.contains(SubElement.LIGHTNING)) continue;
+			}
+
 			if (rand < chance) {
 				sublist.add(sub);
-				bPlayer.addSubElement(s);
+				bPlayer.addSubElement(sub);
 				GeneralMethods.saveSubElements(bPlayer);
+				maxSubElements--;
 			}
 		}
 		int size = sublist.size();
 		if (size >= 1) {
-			for (String sub : sublist) {
-				String name = sub;
-				if (sub.equals("SpiritualProjection")) name = "Spiritual";
-
-				size -= 1;
+			for (SubElement sub : sublist) {
+				String name = sub.getName();
+				sb.append(Element.getElement(name).getColor()).append(name);
+				size--;
 				if (size == 0) {
-					sb.append(Element.getElement(name).getColor() + sub + ChatColor.YELLOW + ".");
-				} else {
-					sb.append(Element.getElement(name).getColor() + sub + ChatColor.YELLOW + ", and ");
+					sb.append(ChatColor.YELLOW).append(".");
+				}
+				else if (size == 1) {
+					sb.append(ChatColor.YELLOW).append(" and ");
+				}
+				else {
+					sb.append(ChatColor.YELLOW).append(", ");
 				}
 			}
 		} else {
 			sb = new StringBuilder(ChatColor.RED + "You sadly don't have any extra affinity for your element.");
 		}
 		
-		Bukkit.getPlayer(bPlayer.getUUID()).sendMessage(sb.toString());
+		Player p = Bukkit.getPlayer(bPlayer.getUUID());
+		if (p != null) {
+			p.sendMessage(sb.toString());
+		}
 	}
 
 	/**
 	 * Sets the player's element as param e, sending a message on what they
 	 * became.
 	 * 
-	 * @param player BendingPlayer which the element is being added to
+	 * @param bPlayer BendingPlayer which the element is being added to
 	 * @param e Element being added to the player
-	 * @param chiblocker if the player is becoming a chiblocker
 	 */
 	private static void assignElement(BendingPlayer bPlayer, Element e) {
 		bPlayer.setElement(e);
@@ -408,13 +420,17 @@ public class RPGMethods {
 		if (isCurrentAvatar(uuid))
 			return true;
 		ResultSet rs = DBConnection.sql.readQuery("SELECT uuid FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'");
-		boolean valid = false;
+		boolean valid;
 		try {
 			valid = rs.next();
+			Statement stmt = rs.getStatement();
+			rs.close();
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+			valid = false;
 		}
+
 		return valid;
 	}
 
@@ -443,6 +459,9 @@ public class RPGMethods {
 			if (rs.next()) {
 				elements2 = rs.getString("elements");
 			}
+			Statement stmt = rs.getStatement();
+			rs.close();
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return;

@@ -4,7 +4,7 @@
 
     <groupId>com.projectkorra</groupId>
     <artifactId>projectkorrarpg</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.2-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>ProjectKorraRPG</name>
   
@@ -17,18 +17,18 @@
     <dependencies>
         <!--Bukkit API-->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.13.2-R0.1-SNAPSHOT</version>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.18.1-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!--ProjectKorraCore-->
         <dependency>
             <groupId>com.projectkorra</groupId>
             <artifactId>projectkorra</artifactId>
-            <version>1.8.8</version>
+            <version>1.9.2</version>
             <scope>system</scope>
-            <systemPath>F:/Users/Mowser/workspace/ProjectKorra/target/ProjectKorra-1.8.8.jar</systemPath>
+            <systemPath>F:/Users/Mowser/Documents/WorkSpace/ProjectKorra/target/ProjectKorra-1.9.2.jar</systemPath>
         </dependency>
     </dependencies>
 
@@ -50,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -58,7 +58,7 @@
             </plugin>
 	        <plugin>
 	            <artifactId>maven-shade-plugin</artifactId>
-		        <version>2.3</version>
+		        <version>3.2.4</version>
 		        <executions>
 		            <execution>
 		                <phase>package</phase>
