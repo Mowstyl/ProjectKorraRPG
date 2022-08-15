@@ -31,8 +31,6 @@ public class ProjectKorraRPG extends JavaPlugin {
 		new AvatarCommand();
 		new EventCommand();
 		new HelpCommand();
-
-		connectToDatabase();
 		
 		Bukkit.getServer().getPluginManager().registerEvents(new RPGListener(), this);
 		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new EventManager(), 0L, 1L);
@@ -49,13 +47,5 @@ public class ProjectKorraRPG extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Might do something later
-	}
-	
-	public void connectToDatabase() {
-		DBConnection.init();
-		if (!DBConnection.isOpen()) {
-			// Message is logged by DBConnection
-			return;
-		}
 	}
 }
