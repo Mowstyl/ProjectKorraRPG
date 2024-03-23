@@ -13,9 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -419,19 +417,17 @@ public class RPGMethods {
 	public static boolean hasBeenAvatar(UUID uuid) {
 		if (isCurrentAvatar(uuid))
 			return true;
-		ResultSet rs = DBConnection.sql.readQuery("SELECT uuid FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'");
-		boolean valid;
-		try {
-			valid = rs.next();
-			Statement stmt = rs.getStatement();
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			valid = false;
-		}
 
-		return valid;
+		boolean value = (boolean) DBConnection.sql.readQuery("SELECT uuid FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'", (rs) -> {
+			try {
+				return rs.next();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return null;
+		});
+
+		return value;
 	}
 
 	/**
@@ -449,23 +445,17 @@ public class RPGMethods {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(Bukkit.getPlayer(uuid));
 		if (bPlayer == null)
 			return;
-		String elements2 = "";
-		if (DBConnection.sql == null)
-			return;
-		if (DBConnection.sql.getConnection() == null)
-			return;
-		ResultSet rs = DBConnection.sql.readQuery("SELECT elements FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'");
-		try {
-			if (rs.next()) {
-				elements2 = rs.getString("elements");
+		String elements2 = (String) DBConnection.sql.readQuery("SELECT elements FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'", (rs) -> {
+			try {
+				if (rs.next()) {
+					return rs.getString("elements");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-			Statement stmt = rs.getStatement();
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return;
-		}
+			return "";
+		});
+
 		for (String s : elements2.split(":")) {
 			elements.add(Element.fromString(s));
 		}

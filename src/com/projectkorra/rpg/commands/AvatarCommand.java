@@ -27,20 +27,17 @@ public class AvatarCommand extends RPGCommand{
 		if (!hasPermission(sender))
 			return;
 		if (args.get(0).equalsIgnoreCase("list")) {
-			List<String> avatars = new ArrayList<>();
-			ResultSet rs = DBConnection.sql.readQuery("SELECT player FROM pk_avatars");
-			try {
-				while (rs.next()) {
-					if (avatars.contains(rs.getString(1))) continue;
-					avatars.add(rs.getString(1));
+			final List<String> avatars = new ArrayList<>();
+			DBConnection.sql.doQuery("SELECT player FROM pk_avatars", (rs) -> {
+				try {
+					while (rs.next()) {
+						if (avatars.contains(rs.getString(1))) continue;
+						avatars.add(rs.getString(1));
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
 				}
-				Statement stmt = rs.getStatement();
-				rs.close();
-				stmt.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-				return;
-			}
+			});
 			sender.sendMessage("Avatar Past Lives:");
 			for (String s : avatars) {
 				sender.sendMessage(s);
