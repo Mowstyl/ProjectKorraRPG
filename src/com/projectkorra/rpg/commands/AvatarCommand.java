@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,16 +27,15 @@ public class AvatarCommand extends RPGCommand{
 			return;
 		if (args.get(0).equalsIgnoreCase("list")) {
 			final List<String> avatars = new ArrayList<>();
-			DBConnection.sql.doQuery("SELECT player FROM pk_avatars", (rs) -> {
-				try {
-					while (rs.next()) {
-						if (avatars.contains(rs.getString(1))) continue;
-						avatars.add(rs.getString(1));
-					}
-				} catch (SQLException e) {
-					e.printStackTrace();
+			try (ResultSet rs = DBConnection.sql.readQuery("SELECT player FROM pk_avatars")) {
+				while (rs.next()) {
+					if (avatars.contains(rs.getString(1))) continue;
+					avatars.add(rs.getString(1));
 				}
-			});
+			}
+			catch (SQLException ex) {
+				ex.printStackTrace();
+			}
 			sender.sendMessage("Avatar Past Lives:");
 			for (String s : avatars) {
 				sender.sendMessage(s);
@@ -58,7 +56,8 @@ public class AvatarCommand extends RPGCommand{
 	
 	@Override
 	protected List<String> getTabCompletion(CommandSender sender, List<String> args) {
-		if (args.size() >= 1) return new ArrayList<String>();
+		if (args.isEmpty())
+			return new ArrayList<String>();
 		List<String> players = new ArrayList<String>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			players.add(p.getName());

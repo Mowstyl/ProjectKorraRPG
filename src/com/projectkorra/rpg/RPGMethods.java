@@ -13,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -418,14 +419,12 @@ public class RPGMethods {
 		if (isCurrentAvatar(uuid))
 			return true;
 
-		boolean value = (boolean) DBConnection.sql.readQuery("SELECT uuid FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'", (rs) -> {
-			try {
-				return rs.next();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			return null;
-		});
+		boolean value = false;
+		try (ResultSet rs = DBConnection.sql.readQuery("SELECT uuid FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'")) {
+			value = rs.next();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		return value;
 	}
@@ -445,16 +444,14 @@ public class RPGMethods {
 		BendingPlayer bPlayer = BendingPlayer.getBendingPlayer(Bukkit.getPlayer(uuid));
 		if (bPlayer == null)
 			return;
-		String elements2 = (String) DBConnection.sql.readQuery("SELECT elements FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'", (rs) -> {
-			try {
-				if (rs.next()) {
-					return rs.getString("elements");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+		String elements2 = "";
+		try (ResultSet rs = DBConnection.sql.readQuery("SELECT elements FROM pk_avatars WHERE uuid = '" + uuid.toString() + "'")) {
+			if (rs.next()) {
+				elements2 =  rs.getString("elements");
 			}
-			return "";
-		});
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		for (String s : elements2.split(":")) {
 			elements.add(Element.fromString(s));

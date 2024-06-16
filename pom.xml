@@ -9,9 +9,15 @@
     <name>ProjectKorraRPG</name>
   
     <repositories>
+        <!-- Spigot -->
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <!-- JitPack -->
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
     <dependencies>
@@ -24,10 +30,16 @@
         </dependency>
         <!--ProjectKorraCore-->
         <dependency>
-            <groupId>com.projectkorra</groupId>
-            <artifactId>ProjectKorra</artifactId>
-            <version>1.12.0</version>
+            <groupId>com.github.Mowstyl.ProjectKorra</groupId>
+            <artifactId>core</artifactId>
+            <version>master-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
