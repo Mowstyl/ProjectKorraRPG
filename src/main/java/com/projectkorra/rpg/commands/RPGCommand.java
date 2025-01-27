@@ -55,7 +55,7 @@ public abstract class RPGCommand implements SubCommand{
 	/**
 	 * Checks if the {@link CommandSender} has permission to execute the
 	 * command. The permission is in the format 'bending.command.
-	 * {@link PKCommand#name name}'. If not, they are told so.
+	 * {@link PKCommand name}'. If not, they are told so.
 	 * 
 	 * @param sender The CommandSender to check
 	 * @return True if they have permission, false otherwise
@@ -72,7 +72,7 @@ public abstract class RPGCommand implements SubCommand{
 	/**
 	 * Checks if the {@link CommandSender} has permission to execute the
 	 * command. The permission is in the format 'bending.command.
-	 * {@link PKCommand#name name}.extra'. If not, they are told so.
+	 * {@link PKCommand name}.extra'. If not, they are told so.
 	 * 
 	 * @param sender The CommandSender to check
 	 * @param extra The additional node to check
@@ -95,7 +95,7 @@ public abstract class RPGCommand implements SubCommand{
 	 * @param size The length of the arguments list
 	 * @param min The minimum acceptable number of arguments
 	 * @param max The maximum acceptable number of arguments
-	 * @return True if min < size < max, false otherwise
+	 * @return True if min &lt; size &lt; max, false otherwise
 	 */
 	protected boolean correctLength(CommandSender sender, int size, int min, int max) {
 		if (size < min || size > max) {

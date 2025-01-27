@@ -1,0 +1,7 @@
+name: ${rootProject.projectName}
+main: ${rootProject.group}.${rootProject.name}.${rootProject.projectName}
+version: ${rootProject.version}
+description: ${rootProject.description}
+authors: [ProjectKorra, Mowstyl]
+softdepend: [ProjectKorra]
+api-version: "1.13"
