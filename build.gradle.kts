@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "com.projectkorra"
-version = "1.1.4"
+version = "1.2.0"
 description = "Rpg side-plugin for ProjectKorra core"
 base.archivesName = gradle.extra["projectName"].toString()
 
@@ -36,6 +36,7 @@ repositories {
     maven {
         url = uri("https://repo.papermc.io/repository/maven-public/")
         content {
+            includeGroup("io.papermc")
             includeGroup("io.papermc.paper")
             includeGroup("com.mojang")
             includeGroup("net.md-5")

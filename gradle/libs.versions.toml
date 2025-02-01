@@ -17,4 +17,4 @@ projectKorra = "master-SNAPSHOT"
 [libraries]
 papermc-paperapi = { group = "io.papermc.paper", name = "paper-api", version.ref = "bukkitAPI" }
 thorgal-oraxen = { group = "io.th0rgal", name = "oraxen", version.ref = "oraxen" }
-projectkorra-core = { group = "com.github.Mowstyl.ProjectKorra", name = "core", version.ref = "projectKorra" }
+projectkorra-core = { group = "com.github.Mowstyl", name = "ProjectKorra", version.ref = "projectKorra" }

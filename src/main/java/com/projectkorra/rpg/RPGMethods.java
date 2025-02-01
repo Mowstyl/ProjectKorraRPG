@@ -4,6 +4,7 @@ import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
 import com.projectkorra.projectkorra.Element.SubElement;
 import com.projectkorra.projectkorra.GeneralMethods;
+import com.projectkorra.projectkorra.OfflineBendingPlayer;
 import com.projectkorra.rpg.configuration.ConfigManager;
 import com.projectkorra.rpg.event.EventManager;
 import com.projectkorra.projectkorra.storage.DBConnection;
@@ -209,7 +210,7 @@ public class RPGMethods {
 	 * 
 	 * @param player BendingPlayer being assigned an element to
 	 */
-	public static void randomAssign(BendingPlayer player) {
+	public static void randomAssign(OfflineBendingPlayer player) {
 		Element newElement = null;
 
 		if (ConfigManager.rpgConfig.get().getBoolean("ElementAssign.Enabled")) {
@@ -260,7 +261,7 @@ public class RPGMethods {
 		}
 	}
 	
-	public static void randomAssignSubElements(BendingPlayer bPlayer) {
+	public static void randomAssignSubElements(OfflineBendingPlayer bPlayer) {
 		if (bPlayer.hasElement(Element.CHI)) return;
                 
 		double chance = 0;
@@ -294,7 +295,7 @@ public class RPGMethods {
 			if (rand < chance) {
 				sublist.add(sub);
 				bPlayer.addSubElement(sub);
-				GeneralMethods.saveSubElements(bPlayer);
+				bPlayer.saveSubElements();
 				maxSubElements--;
 			}
 		}
@@ -331,9 +332,9 @@ public class RPGMethods {
 	 * @param bPlayer BendingPlayer which the element is being added to
 	 * @param e Element being added to the player
 	 */
-	private static void assignElement(BendingPlayer bPlayer, Element e) {
+	private static void assignElement(OfflineBendingPlayer bPlayer, Element e) {
 		bPlayer.setElement(e);
-		GeneralMethods.saveElements(bPlayer);
+		bPlayer.saveElements();
 		Bukkit.getPlayer(bPlayer.getUUID()).sendMessage(ChatColor.YELLOW + "You have been born as an " + e.getColor() + e.getName() + e.getType().getBender() + ChatColor.YELLOW +  "!");
 	}
         

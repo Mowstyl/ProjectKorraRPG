@@ -2,10 +2,11 @@ package com.projectkorra.rpg;
 
 import com.projectkorra.projectkorra.BendingPlayer;
 import com.projectkorra.projectkorra.Element;
+import com.projectkorra.projectkorra.OfflineBendingPlayer;
 import com.projectkorra.projectkorra.ability.CoreAbility;
 import com.projectkorra.projectkorra.ability.EarthAbility;
 import com.projectkorra.projectkorra.avatar.AvatarState;
-import com.projectkorra.projectkorra.event.BendingPlayerCreationEvent;
+import com.projectkorra.projectkorra.event.BendingPlayerLoadEvent;
 import com.projectkorra.rpg.configuration.ConfigManager;
 import com.projectkorra.rpg.event.EventManager;
 import com.projectkorra.rpg.event.FullMoonEvent;
@@ -14,7 +15,6 @@ import com.projectkorra.rpg.event.SolarEclipseEvent;
 import com.projectkorra.rpg.event.SozinsCometEvent;
 import com.projectkorra.rpg.event.WorldSunRiseEvent;
 import com.projectkorra.rpg.event.WorldSunSetEvent;
-import org.bukkit.Bukkit;
 
 import org.bukkit.World;
 import org.bukkit.block.BlockFace;
@@ -38,9 +38,8 @@ public class RPGListener implements Listener{
 		if(event.isCancelled()) return;
 
 		if(finalState) {
-			if (event.getEntity() instanceof Player) {
-				Player player = (Player) event.getEntity();
-				BendingPlayer bP = BendingPlayer.getBendingPlayer(player.getName());
+			if (event.getEntity() instanceof Player player) {
+                BendingPlayer bP = BendingPlayer.getBendingPlayer(player.getName());
 				if (bP != null && (RPGMethods.isCurrentAvatar(player.getUniqueId()))) {
 					if (event.getCause() == DamageCause.FALL &&
 							bP.hasElement(Element.AIR))
@@ -84,9 +83,9 @@ public class RPGListener implements Listener{
 	}*/
 	
 	@EventHandler
-	public void onBendingPlayerCreationEvent(BendingPlayerCreationEvent event) {
+	public void onBendingPlayerCreationEvent(BendingPlayerLoadEvent event) {
 		if (event.getBendingPlayer() != null) {
-			BendingPlayer bPlayer = event.getBendingPlayer();
+			OfflineBendingPlayer bPlayer = event.getBendingPlayer();
 
 			if ((bPlayer.getElements().isEmpty()) && (!bPlayer.isPermaRemoved())) {
 				RPGMethods.randomAssign(bPlayer);
